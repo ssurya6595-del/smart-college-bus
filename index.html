@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Smart College Bus</title>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #f2f5f9;
+            margin: 0;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 400px;
+            margin: 40px auto;
+            background: white;
+            padding: 25px;
+            border-radius: 15px;
+            text-align: center;
+        }
+
+        h1 {
+            margin-bottom: 5px;
+        }
+
+        .subtitle {
+            color: gray;
+            margin-bottom: 25px;
+        }
+
+        label {
+            display: block;
+            text-align: left;
+            margin-top: 15px;
+            font-weight: bold;
+        }
+
+        select,
+        input {
+            width: 100%;
+            padding: 12px;
+            margin-top: 7px;
+            box-sizing: border-box;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+        }
+
+        button {
+            width: 100%;
+            padding: 13px;
+            margin-top: 25px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+
+<>
+
+<div class="container">
+
+    <h1>🚌 Smart College Bus</h1>
+
+    <p class="subtitle">AI Bus Predictor</p>
+
+    <h2>Login</h2>
+
+    <label>User Type</label>
+
+    <select>
+        <option>Student</option>
+        <option>Driver</option>
+        <option>Admin</option>
+    </select>
+
+    <label>Student ID</label>
+
+    <input type="text" placeholder="Enter Student ID">
+
+    <label>Password</label>
+
+    <input type="password" placeholder="Enter Password">
+
+    <button onclick="login()">LOGIN</button>
+
+</div>
+
+<script>
+function login() {
+    let userType = document.querySelector("select").value;
+
+    if (userType.toLowerCase() === "student") {
+        window.location.href = "student.html";
+    }
+    else if (userType.toLowerCase() === "driver") {
+        window.location.href = "driver.html";
+    }
+    else if (userType.toLowerCase() === "admin") {
+        window.location.href = "admin.html";
+    }
+}
+</script>
+</html>

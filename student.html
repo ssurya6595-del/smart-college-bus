@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Student Dashboard</title>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #f2f5f9;
+            margin: 0;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 500px;
+            margin: auto;
+        }
+
+        .header {
+            background: white;
+            padding: 20px;
+            border-radius: 15px;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .card {
+            background: white;
+            padding: 20px;
+            border-radius: 15px;
+            margin-bottom: 15px;
+        }
+
+        .card h3 {
+            margin-top: 0;
+        }
+
+        button {
+            width: 100%;
+            padding: 13px;
+            margin-top: 10px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="container">
+
+    <div class="header">
+        <h1>🚌 Student Dashboard</h1>
+        <p>Welcome to Smart College Bus</p>
+    </div>
+
+    <div class="card">
+        <h3>📍 Find My Bus</h3>
+        <p>Check your bus route and stops.</p>
+        <button onclick="window.location.href='bus.html'">View Bus</button>
+      <button onclick="window.location.href='tracking.html'">
+    📍 Track Van 10
+      </button>
+    </div>
+
+    <div class="card">
+        <h3>⏱️ Bus Prediction</h3>
+        <p>See the predicted arrival time of your bus.</p>
+        <button onclick="window.location.href='prediction.html'">
+    Check Prediction
+        </button>
+    </div>
+
+    <div class="card">
+        <h3>🔔 Notifications</h3>
+        <p>Check important bus updates.</p>
+        <button onclick="window.location.href='notifications.html'">
+    View Notifications
+        </button>
+    </div>
+
+</div>
+
+</body>
+</html>

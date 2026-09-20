@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Driver Dashboard</title>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #f2f5f9;
+            margin: 0;
+            padding: 20px;
+        }
+
+        .header {
+            background: #1e3a8a;
+            color: white;
+            padding: 20px;
+            border-radius: 15px;
+            text-align: center;
+        }
+
+        .card {
+            background: white;
+            margin-top: 20px;
+            padding: 20px;
+            border-radius: 15px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        }
+
+        button {
+            width: 100%;
+            padding: 14px;
+            margin-top: 10px;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            background: #1e3a8a;
+            color: white;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="header">
+        <h1>🚐 Driver Dashboard</h1>
+        <p>Smart College Bus</p>
+    </div>
+
+    <div class="card">
+        <h2>Driver Information</h2>
+        <p>Driver: Not assigned</p>
+        <p>Van: Van 10</p>
+        <p>Route: Van 10 Route</p>
+    </div>
+
+    <div class="card">
+        <h2>Driver Controls</h2>
+
+        <button onclick="startTrip()">🟢 Start Trip</button>
+        <button onclick="endTrip()">🔴 End Trip</button>
+        <button onclick="shareLocation()">📍 Share Location</button>
+        <button onclick="window.location.href='route.html'">
+    🚐 View Route
+        </button>
+    </div>
+    <script>
+      const SUPABASE_URL = "https://kztpuvxjwiacekjflget.supabase.co/rest/v1/";
+const SUPABASE_KEY = "sb_publishable_k-IFp2mb39LTnOL6EPML4w_bb7oUP-h";
+
+const supabaseClient = window.supabase.createClient(
+    SUPABASE_URL,
+    SUPABASE_KEY
+);
+function startTrip() {
+    localStorage.setItem("van10Status", "Trip Started");
+    alert("🚐 Van 10 trip started!");
+}
+
+function endTrip() {
+    localStorage.setItem("van10Status", "Trip Ended");
+    alert("🛑 Van 10 trip ended!");
+}
+      async function shareLocation() {
+    if (!navigator.geolocation) {
+        alert("❌ Location is not supported on this device.");
+        return;
+    }
+
+    navigator.geolocation.getCurrentPosition(
+        async function(position) {
+            let latitude = position.coords.latitude;
+            let longitude = position.coords.longitude;
+
+            const { error } = await supabaseClient
+                .from("van_locations")
+                .insert({
+                    van_number: "Van 10",
+                    latitude: latitude,
+                    longitude: longitude
+                });
+
+            if (error) {
+                alert("❌ Location could not be saved.");
+                console.log(error);
+            } else {
+                alert(
+                    "✅ Van 10 location saved!\n\n" +
+                    "Latitude: " + latitude + "\n" +
+                    "Longitude: " + longitude
+                );
+            }
+        },
+        function() {
+            alert("❌ Location permission was not allowed.");
+        }
+    );
+      }
+    </script>
+</body>
+</html>

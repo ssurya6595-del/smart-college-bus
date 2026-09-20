@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<>
+<head>
+    <title>AI Bus Prediction</title>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #f2f5f9;
+            margin: 0;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 500px;
+            margin: auto;
+        }
+
+        .header,
+        .card {
+            background: white;
+            padding: 25px;
+            border-radius: 15px;
+            margin-bottom: 20px;
+        }
+
+        .header {
+            text-align: center;
+        }
+
+        .card h2 {
+            margin-top: 0;
+        }
+
+        label {
+            display: block;
+            margin-top: 15px;
+            font-weight: bold;
+        }
+
+        select {
+            width: 100%;
+            padding: 12px;
+            margin-top: 8px;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            box-sizing: border-box;
+        }
+
+        button {
+            width: 100%;
+            padding: 13px;
+            margin-top: 20px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+        }
+
+        #result {
+            display: none;
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 10px;
+            background: #f2f5f9;
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="container">
+
+    <div class="header">
+        <h1>🤖 AI Bus Prediction</h1>
+        <p>Smart College Bus</p>
+    </div>
+
+    <div class="card">
+
+        <h2>Check Bus Arrival</h2>
+
+        <label>Select Bus</label>
+
+        <select id="bus">
+    <option>Van 10</option>
+        </select>
+
+        <label>Select Stop</label>
+
+        <select id="stop">
+    <option>Guddur</option>
+    <option>P Guddur</option>
+    <option>Rajupet Road</option>
+    <option>Nagakuppa</option>
+    <option>Srinivasa Sandra</option>
+    <option>Melupalli</option>
+    <option>Yaragunte Stop 1</option>
+    <option>Yaragunte Stop 2</option>
+    <option>Bennavara</option>
+    <option>Chowdehalli</option>
+    <option>Karadaguru</option>
+    <option>Nakkanahalli</option>
+    <option>Kogilahalli</option>
+    <option>Kuruburu</option>
+    <option>Kyasamballi</option>
+    <option>Baluvanahalli</option>
+    <option>Bethamangala</option>
+    <option>Sri Sai PU Degree College</option>
+        </select>
+
+        <button onclick="predictBus()">Predict Arrival</button>
+
+        <div id="result"></div>
+
+    </div>
+
+</div>
+
+<script src="bus-data.js"></script>
+<script>
+function predictBus() {
+    let bus = document.getElementById("bus").value;
+    let stop = document.getElementById("stop").value;
+
+    let data = busData.find(item =>
+        item.bus === bus && item.stop === stop
+    );
+
+    document.getElementById("result").style.display = "block";
+
+    if (data) {
+        document.getElementById("result").innerHTML =
+            "🚌 <strong>" + bus + "</strong><br><br>" +
+            "📍 Stop: <strong>" + stop + "</strong><br><br>" +
+            "⏱️ Travel time: <strong>Not available yet</strong><br><br>" +
+            "🤖 AI prediction: <strong>Waiting for travel data</strong>";
+    } else {
+        document.getElementById("result").innerHTML =
+            "No data found for this stop.";
+    }
+}

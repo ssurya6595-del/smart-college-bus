@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Van 10 Live Tracking</title>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #f2f5f9;
+            margin: 0;
+            padding: 20px;
+        }
+
+        .header {
+            background: #1e3a8a;
+            color: white;
+            padding: 20px;
+            border-radius: 15px;
+            text-align: center;
+        }
+
+        .card {
+            background: white;
+            margin-top: 20px;
+            padding: 20px;
+            border-radius: 15px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        }
+
+        .location {
+            font-size: 18px;
+            line-height: 1.8;
+        }
+
+        button {
+            width: 100%;
+            padding: 14px;
+            margin-top: 15px;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            background: #1e3a8a;
+            color: white;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="header">
+        <h1>📍 Van 10 Tracking</h1>
+        <p>Smart College Bus</p>
+    </div>
+
+    <div class="card">
+        <h2>🚐 Current Van</h2>
+
+        <div class="location">
+            <p>Van Number: <strong>Van 10</strong></p>
+            <p>Status: <strong id="tripStatus">Checking...</strong></p>
+            <p>Latitude: <strong>--</strong></p>
+            <p>Longitude: <strong>--</strong></p>
+        </div>
+
+        <button onclick="getLocation()">
+            📍 Get Current Location
+        </button>
+    </div>
+
+    <script>
+        function getLocation() {
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(
+                    function(position) {
+                        alert(
+                            "📍 Location found!\n\n" +
+                            "Latitude: " + position.coords.latitude +
+                            "\nLongitude: " + position.coords.longitude
+                        );
+                    },
+                    function() {
+                        alert("❌ Location permission was not allowed.");
+                    }
+                );
+            } else {
+                alert("❌ Location is not supported.");
+            }
+        }
+      function showTripStatus() {
+    let status = localStorage.getItem("van10Status");
+
+    if (status === "Trip Started") {
+        document.getElementById("tripStatus").textContent = "🟢 Trip Started";
+    }
+    else if (status === "Trip Ended") {
+        document.getElementById("tripStatus").textContent = "🔴 Trip Ended";
+    }
+    else {
+        document.getElementById("tripStatus").textContent = "⚪ Trip Not Started";
+    }
+}
+
+showTripStatus();
+
+showTripStatus();
+    </script>
+
+</body>
+</html>

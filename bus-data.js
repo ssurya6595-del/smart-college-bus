@@ -1,0 +1,20 @@
+const busData = [
+    { bus: "Van 10", stop: "Guddur" },
+    { bus: "Van 10", stop: "P Guddur" },
+    { bus: "Van 10", stop: "Rajupet Road" },
+    { bus: "Van 10", stop: "Nagakuppa" },
+    { bus: "Van 10", stop: "Srinivasa Sandra" },
+    { bus: "Van 10", stop: "Melupalli" },
+    { bus: "Van 10", stop: "Yaragunte Stop 1" },
+    { bus: "Van 10", stop: "Yaragunte Stop 2" },
+    { bus: "Van 10", stop: "Bennavara" },
+    { bus: "Van 10", stop: "Chowdehalli" },
+    { bus: "Van 10", stop: "Karadaguru" },
+    { bus: "Van 10", stop: "Nakkanahalli" },
+    { bus: "Van 10", stop: "Kogilahalli" },
+    { bus: "Van 10", stop: "Kuruburu" },
+    { bus: "Van 10", stop: "Kyasamballi" },
+    { bus: "Van 10", stop: "Baluvanahalli" },
+    { bus: "Van 10", stop: "Bethamangala" },
+    { bus: "Van 10", stop: "Sri Sai PU Degree College" }
+];

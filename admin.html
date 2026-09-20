@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Admin Dashboard</title>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #f2f5f9;
+            margin: 0;
+            padding: 20px;
+        }
+
+        .header {
+            background: #1e3a8a;
+            color: white;
+            padding: 20px;
+            border-radius: 15px;
+            text-align: center;
+        }
+
+        .card {
+            background: white;
+            margin-top: 20px;
+            padding: 20px;
+            border-radius: 15px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        }
+
+        button {
+            width: 100%;
+            padding: 14px;
+            margin-top: 10px;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            background: #1e3a8a;
+            color: white;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="header">
+        <h1>👨‍💼 Admin Dashboard</h1>
+        <p>Smart College Bus</p>
+    </div>
+
+    <div class="card">
+        <h2>System Information</h2>
+        <p>🚐 Total Vans: 14</p>
+        <p>📍 Van 10: 18 Stops</p>
+        <p>🎓 College: Sri Sai PU Degree College</p>
+    </div>
+
+    <div class="card">
+        <h2>Admin Controls</h2>
+
+        <button onclick="window.location.href='vans.html'">
+    🚐 Manage Vans
+        </button>
+        <button>👨‍🎓 Manage Students</button>
+        <button onclick="window.location.href='drivers.html'">
+    👨‍✈️ Manage Drivers
+        </button>
+        <button onclick="window.location.href='routes.html'">
+    🛣️ Manage Routes
+        </button>
+        <button>🔔 Manage Notifications</button>
+    </div>
+
+</body>
+</html>
