@@ -102,7 +102,7 @@ function endTrip() {
                 });
 
             if (error) {
-                alert("❌ Location could not be saved.");
+                alert("❌ Location could not be saved.\n\nError: " + error.message);
                 console.log(error);
             } else {
                 alert(
