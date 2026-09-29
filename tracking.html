@@ -2,6 +2,7 @@
 <html>
 <head>
     <title>Van 10 Live Tracking</title>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
     <style>
         body {
@@ -58,35 +59,47 @@
         <div class="location">
             <p>Van Number: <strong>Van 10</strong></p>
             <p>Status: <strong id="tripStatus">Checking...</strong></p>
-            <p>Latitude: <strong>--</strong></p>
-            <p>Longitude: <strong>--</strong></p>
+            <p>Latitude: <strong id="latitude">--</strong></p>
+<p>Longitude: <strong id="longitude">--</strong></p>
         </div>
 
-        <button onclick="getLocation()">
+        <button onclick="getVanLocation()">
             📍 Get Current Location
         </button>
     </div>
 
     <script>
-        function getLocation() {
-            if (navigator.geolocation) {
-                navigator.geolocation.getCurrentPosition(
-                    function(position) {
-                        alert(
-                            "📍 Location found!\n\n" +
-                            "Latitude: " + position.coords.latitude +
-                            "\nLongitude: " + position.coords.longitude
-                        );
-                    },
-                    function() {
-                        alert("❌ Location permission was not allowed.");
-                    }
-                );
-            } else {
-                alert("❌ Location is not supported.");
-            }
-        }
-      function showTripStatus() {
+const SUPABASE_URL = "https://kztpuvxjwiacekjflget.supabase.co";
+const SUPABASE_KEY = "sb_publishable_k-IFp2mb39LTnOL6EPML4w_bb7oUP-h";
+
+const supabaseClient = window.supabase.createClient(
+    SUPABASE_URL,
+    SUPABASE_KEY
+);
+
+async function getVanLocation() {
+    const { data, error } = await supabaseClient
+        .from("van_locations")
+        .select("latitude, longsb_publishable_k-IFp2mb39LTnOL6EPML4w_bb7oUP-hitude, updated_at")
+        .eq("van_number", "Van 10")
+        .order("updated_at", { ascending: false })
+        .limit(1);
+
+    if (error) {
+        alert("❌ Could not get Van 10 location.\n\n" + error.message);
+        return;
+    }
+
+    if (data.length === 0) {
+        alert("⚠️ No Van 10 location available yet.");
+        return;
+    }
+
+    document.getElementById("latitude").textContent = data[0].latitude;
+    document.getElementById("longitude").textContent = data[0].longitude;
+}
+
+function showTripStatus() {
     let status = localStorage.getItem("van10Status");
 
     if (status === "Trip Started") {
@@ -101,9 +114,7 @@
 }
 
 showTripStatus();
-
-showTripStatus();
-    </script>
+</script>
 
 </body>
 </html>
