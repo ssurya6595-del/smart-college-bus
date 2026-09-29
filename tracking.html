@@ -80,7 +80,7 @@ const supabaseClient = window.supabase.createClient(
 async function getVanLocation() {
     const { data, error } = await supabaseClient
         .from("van_locations")
-        .select("latitude, longsb_publishable_k-IFp2mb39LTnOL6EPML4w_bb7oUP-hitude, updated_at")
+        .select("latitude, longitude, updated_at")
         .eq("van_number", "Van 10")
         .order("updated_at", { ascending: false })
         .limit(1);
