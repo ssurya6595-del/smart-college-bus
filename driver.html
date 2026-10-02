@@ -60,6 +60,29 @@
 
         <button onclick="startTrip()">🟢 Start Trip</button>
         <button onclick="endTrip()">🔴 End Trip</button>
+      <select id="stopName" style="width:100%; padding:14px; margin-top:10px; border-radius:10px; font-size:16px;">
+    <option value="">Select Reached Stop</option>
+    <option>Guddur</option>
+    <option>P Guddur</option>
+    <option>Rajupet Road</option>
+    <option>Nagakuppa</option>
+    <option>Srinivasa Sandra</option>
+    <option>Melupalli</option>
+    <option>Yaragunte Stop 1</option>
+    <option>Yaragunte Stop 2</option>
+    <option>Bennavara</option>
+    <option>Chowdehalli</option>
+    <option>Karadaguru</option>
+    <option>Nakkanahalli</option>
+    <option>Kogilahalli</option>
+    <option>Kuruburu</option>
+    <option>Kyasamballi</option>
+    <option>Baluvanahalli</option>
+    <option>Bethamangala</option>
+    <option>Sri Sai PU Degree College</option>
+</select>
+
+<button onclick="recordStopArrival()">📍 Reached Stop</button>
         <button onclick="shareLocation()">📍 Share Location</button>
         <button onclick="window.location.href='route.html'">
     🚐 View Route
@@ -73,15 +96,87 @@ const supabaseClient = window.supabase.createClient(
     SUPABASE_URL,
     SUPABASE_KEY
 );
-function startTrip() {
+async function startTrip() {
     localStorage.setItem("van10Status", "Trip Started");
+
+    const { error } = await supabaseClient
+        .from("van_status")
+        .insert({
+            van_number: "Van 10",
+            status: "Trip Started"
+        });
+
+    if (error) {
+        alert("❌ Could not save trip status.\n\n" + error.message);
+        return;
+    }
+
     alert("🚐 Van 10 trip started!");
 }
 
-function endTrip() {
+async function endTrip() {
     localStorage.setItem("van10Status", "Trip Ended");
+
+    const { error } = await supabaseClient
+        .from("van_status")
+        .insert({
+            van_number: "Van 10",
+            status: "Trip Ended"
+        });
+
+    if (error) {
+        alert("❌ Could not save trip status.\n\n" + error.message);
+        return;
+    }
+
     alert("🛑 Van 10 trip ended!");
 }
+      async function recordStopArrival() {
+
+    let stop = document.getElementById("stopName").value;
+
+    if (stop === "") {
+        alert("⚠️ Please select a stop first.");
+        return;
+    }
+
+    if (!navigator.geolocation) {
+        alert("❌ Location is not supported on this device.");
+        return;
+    }
+
+    navigator.geolocation.getCurrentPosition(
+        async function(position) {
+
+            let latitude = position.coords.latitude;
+            let longitude = position.coords.longitude;
+
+            const { error } = await supabaseClient
+                .from("stop_arrivals")
+                .insert({
+                    van_number: "Van 10",
+                    stop_name: stop,
+                    latitude: latitude,
+                    longitude: longitude
+                });
+
+            if (error) {
+                alert("❌ Stop arrival could not be saved.\n\n" + error.message);
+                return;
+            }
+
+            alert(
+                "✅ Stop arrival saved!\n\n" +
+                "📍 Stop: " + stop + "\n" +
+                "Latitude: " + latitude + "\n" +
+                "Longitude: " + longitude
+            );
+        },
+        function() {
+            alert("❌ Location permission was not allowed.");
+        }
+    );
+      }
       async function shareLocation() {
     if (!navigator.geolocation) {
         alert("❌ Location is not supported on this device.");
