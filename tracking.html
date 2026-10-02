@@ -2,7 +2,18 @@
 <html>
 <head>
     <title>Van 10 Live Tracking</title>
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+    <!-- Leaflet Map -->
+    <link
+        rel="stylesheet"
+        href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+    />
+
+    <script
+        src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js">
+    </script>
 
     <style>
         body {
@@ -43,6 +54,13 @@
             background: #1e3a8a;
             color: white;
         }
+
+        #map {
+            width: 100%;
+            height: 350px;
+            margin-top: 20px;
+            border-radius: 12px;
+        }
     </style>
 </head>
 
@@ -58,63 +76,245 @@
 
         <div class="location">
             <p>Van Number: <strong>Van 10</strong></p>
-            <p>Status: <strong id="tripStatus">Checking...</strong></p>
-            <p>Latitude: <strong id="latitude">--</strong></p>
-<p>Longitude: <strong id="longitude">--</strong></p>
+
+            <p>
+                Status:
+                <strong id="tripStatus">Checking...</strong>
+            </p>
+
+            <p>
+                Latitude:
+                <strong id="latitude">--</strong>
+            </p>
+
+            <p>
+                Longitude:
+                <strong id="longitude">--</strong>
+            </p>
         </div>
 
         <button onclick="getVanLocation()">
             📍 Get Current Location
         </button>
+
+        <div id="map"></div>
     </div>
 
+
     <script>
-const SUPABASE_URL = "https://kztpuvxjwiacekjflget.supabase.co";
-const SUPABASE_KEY = "sb_publishable_k-IFp2mb39LTnOL6EPML4w_bb7oUP-h";
 
-const supabaseClient = window.supabase.createClient(
-    SUPABASE_URL,
-    SUPABASE_KEY
-);
+        const SUPABASE_URL =
+            "https://kztpuvxjwiacekjflget.supabase.co";
 
-async function getVanLocation() {
-    const { data, error } = await supabaseClient
-        .from("van_locations")
-        .select("latitude, longitude, updated_at")
-        .eq("van_number", "Van 10")
-        .order("updated_at", { ascending: false })
-        .limit(1);
+        const SUPABASE_KEY =
+            "sb_publishable_k-IFp2mb39LTnOL6EPML4w_bb7oUP-h";
 
-    if (error) {
-        alert("❌ Could not get Van 10 location.\n\n" + error.message);
-        return;
-    }
+        const supabaseClient =
+            window.supabase.createClient(
+                SUPABASE_URL,
+                SUPABASE_KEY
+            );
 
-    if (data.length === 0) {
-        alert("⚠️ No Van 10 location available yet.");
-        return;
-    }
 
-    document.getElementById("latitude").textContent = data[0].latitude;
-    document.getElementById("longitude").textContent = data[0].longitude;
-}
+        // Create map
+        const map = L.map("map").setView(
+            [12.914148, 78.4204467],
+            15
+        );
 
-function showTripStatus() {
-    let status = localStorage.getItem("van10Status");
 
-    if (status === "Trip Started") {
-        document.getElementById("tripStatus").textContent = "🟢 Trip Started";
-    }
-    else if (status === "Trip Ended") {
-        document.getElementById("tripStatus").textContent = "🔴 Trip Ended";
-    }
-    else {
-        document.getElementById("tripStatus").textContent = "⚪ Trip Not Started";
-    }
-}
+        // OpenStreetMap
+        L.tileLayer(
+            "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
+            {
+                maxZoom: 19,
+                attribution: "&copy; OpenStreetMap"
+            }
+        ).addTo(map);
 
-showTripStatus();
-</script>
+
+        // Van marker
+        let vanMarker = null;
+
+
+        async function getVanLocation() {
+
+            const { data, error } =
+                await supabaseClient
+                .from("van_locations")
+                .select(
+                    "latitude, longitude, updated_at"
+                )
+                .eq("van_number", "Van 10")
+                .order(
+                    "updated_at",
+                    { ascending: false }
+                )
+                .limit(1);
+
+
+            if (error) {
+
+                alert(
+                    "❌ Could not get Van 10 location.\n\n"
+                    + error.message
+                );
+
+                return;
+            }
+
+
+            if (!data || data.length === 0) {
+
+                alert(
+                    "⚠️ No Van 10 location available yet."
+                );
+
+                return;
+            }
+
+
+            let latitude = data[0].latitude;
+            let longitude = data[0].longitude;
+
+
+            document.getElementById(
+                "latitude"
+            ).textContent = latitude;
+
+
+            document.getElementById(
+                "longitude"
+            ).textContent = longitude;
+
+
+            // Update map
+            map.setView(
+                [latitude, longitude],
+                16
+            );
+
+
+            if (vanMarker === null) {
+
+                vanMarker = L.marker(
+                    [latitude, longitude]
+                )
+                .addTo(map)
+                .bindPopup(
+                    "🚐 Van 10"
+                )
+                .openPopup();
+
+            } else {
+
+                vanMarker.setLatLng(
+                    [latitude, longitude]
+                );
+
+            }
+
+        }
+
+
+        async function showTripStatus() {
+
+            const { data, error } =
+                await supabaseClient
+                .from("van_status")
+                .select(
+                    "status, updated_at"
+                )
+                .eq(
+                    "van_number",
+                    "Van 10"
+                )
+                .order(
+                    "updated_at",
+                    { ascending: false }
+                )
+                .limit(1);
+
+
+            if (error) {
+
+                document.getElementById(
+                    "tripStatus"
+                ).textContent =
+                    "⚠️ Status unavailable";
+
+                return;
+            }
+
+
+            if (!data || data.length === 0) {
+
+                document.getElementById(
+                    "tripStatus"
+                ).textContent =
+                    "⚪ Trip Not Started";
+
+                return;
+            }
+
+
+            if (
+                data[0].status ===
+                "Trip Started"
+            ) {
+
+                document.getElementById(
+                    "tripStatus"
+                ).textContent =
+                    "🟢 Trip Started";
+
+            }
+
+            else if (
+                data[0].status ===
+                "Trip Ended"
+            ) {
+
+                document.getElementById(
+                    "tripStatus"
+                ).textContent =
+                    "🔴 Trip Ended";
+
+            }
+
+            else {
+
+                document.getElementById(
+                    "tripStatus"
+                ).textContent =
+                    "⚪ Trip Not Started";
+
+            }
+
+        }
+
+
+        // Load location
+        getVanLocation();
+
+        // Load status
+        showTripStatus();
+
+
+        // Refresh location every 5 seconds
+        setInterval(
+            getVanLocation,
+            5000
+        );
+
+
+        // Refresh trip status every 5 seconds
+        setInterval(
+            showTripStatus,
+            5000
+        );
+
+    </script>
 
 </body>
 </html>
