@@ -294,18 +294,71 @@
         }
 
 
-        // Load location
-        getVanLocation();
+        // Load latest location when page opens
+getVanLocation();
 
-        // Load status
-        showTripStatus();
+// Load trip status
+showTripStatus();
 
+// Automatically receive new GPS locations
+supabaseClient
+    .channel("van10-live-location")
+    .on(
+        "postgres_changes",
+        {
+            event: "INSERT",
+            schema: "public",
+            table: "van_locations",
+            filter: "van_number=eq.Van 10"
+        },
+        function(payload) {
 
-        // Refresh location every 5 seconds
-        setInterval(
-            getVanLocation,
-            5000
-        );
+            let latitude = payload.new.latitude;
+            let longitude = payload.new.longitude;
+
+            // Update coordinates
+            document.getElementById("latitude").textContent =
+                latitude;
+
+            document.getElementById("longitude").textContent =
+                longitude;
+
+            // Move Van 10 marker
+            map.setView(
+                [latitude, longitude],
+                16
+            );
+
+            if (vanMarker === null) {
+
+                vanMarker = L.marker(
+                    [latitude, longitude]
+                )
+                .addTo(map)
+                .bindPopup("🚐 Van 10")
+                .openPopup();
+
+            } else {
+
+                vanMarker.setLatLng(
+                    [latitude, longitude]
+                );
+            }
+
+            console.log(
+                "Van 10 moved:",
+                latitude,
+                longitude
+            );
+        }
+    )
+    .subscribe();
+
+// Keep trip status updated
+setInterval(
+    showTripStatus,
+    5000
+);
 
 
         // Refresh trip status every 5 seconds
