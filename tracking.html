@@ -11,9 +11,7 @@
         href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
     />
 
-    <script
-        src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js">
-    </script>
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 
     <style>
         body {
@@ -44,6 +42,23 @@
             line-height: 1.8;
         }
 
+        .info-box {
+            background: #f1f5f9;
+            padding: 15px;
+            border-radius: 12px;
+            margin-top: 15px;
+        }
+
+        .current-stop {
+            color: #15803d;
+            font-weight: bold;
+        }
+
+        .next-stop {
+            color: #1d4ed8;
+            font-weight: bold;
+        }
+
         button {
             width: 100%;
             padding: 14px;
@@ -57,9 +72,27 @@
 
         #map {
             width: 100%;
-            height: 350px;
+            height: 400px;
             margin-top: 20px;
             border-radius: 12px;
+        }
+
+        .route-list {
+            margin-top: 15px;
+            padding-left: 20px;
+        }
+
+        .route-list li {
+            padding: 7px 0;
+        }
+
+        .passed-stop {
+            color: #888;
+        }
+
+        .upcoming-stop {
+            color: #111;
+            font-weight: bold;
         }
     </style>
 </head>
@@ -72,10 +105,15 @@
     </div>
 
     <div class="card">
+
         <h2>🚐 Current Van</h2>
 
         <div class="location">
-            <p>Van Number: <strong>Van 10</strong></p>
+
+            <p>
+                Van Number:
+                <strong>Van 10</strong>
+            </p>
 
             <p>
                 Status:
@@ -91,6 +129,31 @@
                 Longitude:
                 <strong id="longitude">--</strong>
             </p>
+
+        </div>
+
+        <!-- Current and Next Stop -->
+        <div class="info-box">
+
+            <p>
+                📍 Current Stop:
+                <span id="currentStop" class="current-stop">
+                    Waiting...
+                </span>
+            </p>
+
+            <p>
+                ➡️ Next Stop:
+                <span id="nextStop" class="next-stop">
+                    Waiting...
+                </span>
+            </p>
+
+            <p>
+                🛣️ Stops Remaining:
+                <strong id="stopsRemaining">--</strong>
+            </p>
+
         </div>
 
         <button onclick="getVanLocation()">
@@ -98,10 +161,25 @@
         </button>
 
         <div id="map"></div>
+
+    </div>
+
+
+    <!-- Route List -->
+    <div class="card">
+
+        <h2>🛣️ Van 10 Route</h2>
+
+        <ol id="routeList" class="route-list"></ol>
+
     </div>
 
 
     <script>
+
+        /* ==============================
+           SUPABASE
+        ============================== */
 
         const SUPABASE_URL =
             "https://kztpuvxjwiacekjflget.supabase.co";
@@ -116,14 +194,140 @@
             );
 
 
-        // Create map
-        const map = L.map("map").setView(
-            [12.914148, 78.4204467],
-            15
-        );
+        /* ==============================
+           VAN 10 ROUTE - 19 STOPS
+        ============================== */
+
+        const routeStops = [
+
+            {
+                name: "Guddur",
+                lat: 12.9032238,
+                lng: 78.4614818
+            },
+
+            {
+                name: "P Guddur",
+                lat: 12.9024623,
+                lng: 78.4552956
+            },
+
+            {
+                name: "Rajupet Road",
+                lat: 12.9172295,
+                lng: 78.4475890
+            },
+
+            {
+                name: "Nagakuppa",
+                lat: 12.9250877,
+                lng: 78.4395306
+            },
+
+            {
+                name: "Srinivasa Sandra",
+                lat: 12.9181301,
+                lng: 78.4302529
+            },
+
+            {
+                name: "Melupalli",
+                lat: 12.9193513,
+                lng: 78.4228919
+            },
+
+            {
+                name: "Yaragunte Stop 1",
+                lat: 12.9158122,
+                lng: 78.4190157
+            },
+
+            {
+                name: "Yaragunte Stop 2",
+                lat: 12.9150112,
+                lng: 78.4163389
+            },
+
+            {
+                name: "SVS School",
+                lat: 12.9154769,
+                lng: 78.4144459
+            },
+
+            {
+                name: "Bennavara",
+                lat: 12.9177024,
+                lng: 78.4117443
+            },
+
+            {
+                name: "Chowdehalli",
+                lat: 12.9261671,
+                lng: 78.4144962
+            },
+
+            {
+                name: "Karadaguru",
+                lat: 12.9380423,
+                lng: 78.4042854
+            },
+
+            {
+                name: "Nakkanahalli",
+                lat: 12.9447200,
+                lng: 78.3926081
+            },
+
+            {
+                name: "Kogilahalli",
+                lat: 12.9518235,
+                lng: 78.3857610
+            },
+
+            {
+                name: "Kuruburu",
+                lat: 12.9494327,
+                lng: 78.3730856
+            },
+
+            {
+                name: "Kyasamballi",
+                lat: 12.9550093,
+                lng: 78.3471329
+            },
+
+            {
+                name: "Baluvanahalli",
+                lat: 12.9668841,
+                lng: 78.3427461
+            },
+
+            {
+                name: "Bethamangala",
+                lat: 13.0024072,
+                lng: 78.3323351
+            },
+
+            {
+                name: "Sri Sai PU Degree College",
+                lat: 13.0025565,
+                lng: 78.3440115
+            }
+
+        ];
 
 
-        // OpenStreetMap
+        /* ==============================
+           CREATE MAP
+        ============================== */
+
+        const map =
+            L.map("map").setView(
+                [12.914148, 78.4204467],
+                14
+            );
+
+
         L.tileLayer(
             "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
             {
@@ -133,80 +337,326 @@
         ).addTo(map);
 
 
-        // Van marker
+        /* ==============================
+           DRAW ROUTE
+        ============================== */
+
+        const routeCoordinates =
+            routeStops.map(
+                stop => [stop.lat, stop.lng]
+            );
+
+
+        const routeLine =
+            L.polyline(
+                routeCoordinates,
+                {
+                    weight: 5
+                }
+            ).addTo(map);
+
+
+        /* ==============================
+           ADD STOP MARKERS
+        ============================== */
+
+        routeStops.forEach(
+            function(stop, index) {
+
+                const marker =
+                    L.marker(
+                        [stop.lat, stop.lng]
+                    )
+                    .addTo(map);
+
+                marker.bindPopup(
+                    "🛑 Stop " +
+                    (index + 1) +
+                    "<br>" +
+                    stop.name
+                );
+
+            }
+        );
+
+
+        /* ==============================
+           SHOW ROUTE LIST
+        ============================== */
+
+        function showRouteList() {
+
+            const list =
+                document.getElementById(
+                    "routeList"
+                );
+
+            list.innerHTML = "";
+
+            routeStops.forEach(
+                function(stop, index) {
+
+                    const li =
+                        document.createElement("li");
+
+                    li.textContent =
+                        (index + 1) +
+                        ". " +
+                        stop.name;
+
+                    li.className =
+                        "upcoming-stop";
+
+                    list.appendChild(li);
+
+                }
+            );
+
+        }
+
+
+        showRouteList();
+
+
+        /* ==============================
+           VAN MARKER
+        ============================== */
+
         let vanMarker = null;
 
 
-        async function getVanLocation() {
+        /* ==============================
+           DISTANCE FUNCTION
+        ============================== */
 
-            const { data, error } =
-                await supabaseClient
-                .from("van_locations")
-                .select(
-                    "latitude, longitude, updated_at"
-                )
-                .eq("van_number", "Van 10")
-                .order(
-                    "updated_at",
-                    { ascending: false }
-                )
-                .limit(1);
+        function calculateDistance(
+            lat1,
+            lon1,
+            lat2,
+            lon2
+        ) {
 
+            const R = 6371;
 
-            if (error) {
+            const dLat =
+                (lat2 - lat1) *
+                Math.PI / 180;
 
-                alert(
-                    "❌ Could not get Van 10 location.\n\n"
-                    + error.message
+            const dLon =
+                (lon2 - lon1) *
+                Math.PI / 180;
+
+            const a =
+                Math.sin(dLat / 2) *
+                Math.sin(dLat / 2) +
+
+                Math.cos(
+                    lat1 *
+                    Math.PI / 180
+                ) *
+
+                Math.cos(
+                    lat2 *
+                    Math.PI / 180
+                ) *
+
+                Math.sin(dLon / 2) *
+                Math.sin(dLon / 2);
+
+            const c =
+                2 *
+                Math.atan2(
+                    Math.sqrt(a),
+                    Math.sqrt(1 - a)
                 );
 
-                return;
+            return R * c;
+
+        }
+
+
+        /* ==============================
+           FIND CURRENT / NEXT STOP
+        ============================== */
+
+        function updateStopInformation(
+            latitude,
+            longitude
+        ) {
+
+            let nearestIndex = 0;
+            let nearestDistance =
+                Infinity;
+
+
+            routeStops.forEach(
+                function(stop, index) {
+
+                    const distance =
+                        calculateDistance(
+                            latitude,
+                            longitude,
+                            stop.lat,
+                            stop.lng
+                        );
+
+                    if (
+                        distance <
+                        nearestDistance
+                    ) {
+
+                        nearestDistance =
+                            distance;
+
+                        nearestIndex =
+                            index;
+
+                    }
+
+                }
+            );
+
+
+            const currentStop =
+                routeStops[nearestIndex];
+
+
+            document.getElementById(
+                "currentStop"
+            ).textContent =
+                currentStop.name;
+
+
+            if (
+                nearestIndex <
+                routeStops.length - 1
+            ) {
+
+                document.getElementById(
+                    "nextStop"
+                ).textContent =
+                    routeStops[
+                        nearestIndex + 1
+                    ].name;
+
+            } else {
+
+                document.getElementById(
+                    "nextStop"
+                ).textContent =
+                    "College reached 🎓";
+
             }
 
 
-            if (!data || data.length === 0) {
+            const remaining =
+                routeStops.length -
+                nearestIndex -
+                1;
 
-                alert(
-                    "⚠️ No Van 10 location available yet."
+
+            document.getElementById(
+                "stopsRemaining"
+            ).textContent =
+                remaining;
+
+
+            /* Update route list */
+
+            const list =
+                document.getElementById(
+                    "routeList"
                 );
 
-                return;
+            const items =
+                list.children;
+
+
+            for (
+                let i = 0;
+                i < items.length;
+                i++
+            ) {
+
+                if (
+                    i < nearestIndex
+                ) {
+
+                    items[i].className =
+                        "passed-stop";
+
+                }
+
+                else if (
+                    i === nearestIndex
+                ) {
+
+                    items[i].className =
+                        "current-stop";
+
+                }
+
+                else {
+
+                    items[i].className =
+                        "upcoming-stop";
+
+                }
+
             }
 
+        }
 
-            let latitude = data[0].latitude;
-            let longitude = data[0].longitude;
 
+        /* ==============================
+           DISPLAY VAN LOCATION
+        ============================== */
+
+        function displayVanLocation(
+            latitude,
+            longitude
+        ) {
 
             document.getElementById(
                 "latitude"
-            ).textContent = latitude;
-
+            ).textContent =
+                latitude;
 
             document.getElementById(
                 "longitude"
-            ).textContent = longitude;
+            ).textContent =
+                longitude;
 
 
-            // Update map
+            updateStopInformation(
+                latitude,
+                longitude
+            );
+
+
             map.setView(
                 [latitude, longitude],
                 16
             );
 
 
-            if (vanMarker === null) {
+            if (
+                vanMarker === null
+            ) {
 
-                vanMarker = L.marker(
-                    [latitude, longitude]
-                )
-                .addTo(map)
-                .bindPopup(
-                    "🚐 Van 10"
-                )
-                .openPopup();
+                vanMarker =
+                    L.marker(
+                        [latitude, longitude]
+                    )
+                    .addTo(map)
+                    .bindPopup(
+                        "🚐 Van 10"
+                    )
+                    .openPopup();
 
-            } else {
+            }
+
+            else {
 
                 vanMarker.setLatLng(
                     [latitude, longitude]
@@ -217,9 +667,85 @@
         }
 
 
+        /* ==============================
+           GET LATEST VAN LOCATION
+        ============================== */
+
+        async function getVanLocation() {
+
+            const {
+                data,
+                error
+            } =
+                await supabaseClient
+                .from("van_locations")
+                .select(
+                    "latitude, longitude, updated_at"
+                )
+                .eq(
+                    "van_number",
+                    "Van 10"
+                )
+                .order(
+                    "updated_at",
+                    {
+                        ascending: false
+                    }
+                )
+                .limit(1);
+
+
+            if (error) {
+
+                alert(
+                    "❌ Could not get Van 10 location.\n\n" +
+                    error.message
+                );
+
+                return;
+
+            }
+
+
+            if (
+                !data ||
+                data.length === 0
+            ) {
+
+                alert(
+                    "⚠️ No Van 10 location available yet."
+                );
+
+                return;
+
+            }
+
+
+            const latitude =
+                Number(data[0].latitude);
+
+            const longitude =
+                Number(data[0].longitude);
+
+
+            displayVanLocation(
+                latitude,
+                longitude
+            );
+
+        }
+
+
+        /* ==============================
+           TRIP STATUS
+        ============================== */
+
         async function showTripStatus() {
 
-            const { data, error } =
+            const {
+                data,
+                error
+            } =
                 await supabaseClient
                 .from("van_status")
                 .select(
@@ -231,7 +757,9 @@
                 )
                 .order(
                     "updated_at",
-                    { ascending: false }
+                    {
+                        ascending: false
+                    }
                 )
                 .limit(1);
 
@@ -244,10 +772,14 @@
                     "⚠️ Status unavailable";
 
                 return;
+
             }
 
 
-            if (!data || data.length === 0) {
+            if (
+                !data ||
+                data.length === 0
+            ) {
 
                 document.getElementById(
                     "tripStatus"
@@ -255,6 +787,7 @@
                     "⚪ Trip Not Started";
 
                 return;
+
             }
 
 
@@ -294,74 +827,67 @@
         }
 
 
-        // Load latest location when page opens
-getVanLocation();
+        /* ==============================
+           LOAD INITIAL DATA
+        ============================== */
 
-// Load trip status
-showTripStatus();
+        getVanLocation();
 
-// Automatically receive new GPS locations
-supabaseClient
-    .channel("van10-live-location")
-    .on(
-        "postgres_changes",
-        {
-            event: "INSERT",
-            schema: "public",
-            table: "van_locations",
-            filter: "van_number=eq.Van 10"
-        },
-        function(payload) {
-
-            let latitude = payload.new.latitude;
-            let longitude = payload.new.longitude;
-
-            // Update coordinates
-            document.getElementById("latitude").textContent =
-                latitude;
-
-            document.getElementById("longitude").textContent =
-                longitude;
-
-            // Move Van 10 marker
-            map.setView(
-                [latitude, longitude],
-                16
-            );
-
-            if (vanMarker === null) {
-
-                vanMarker = L.marker(
-                    [latitude, longitude]
-                )
-                .addTo(map)
-                .bindPopup("🚐 Van 10")
-                .openPopup();
-
-            } else {
-
-                vanMarker.setLatLng(
-                    [latitude, longitude]
-                );
-            }
-
-            console.log(
-                "Van 10 moved:",
-                latitude,
-                longitude
-            );
-        }
-    )
-    .subscribe();
-
-// Keep trip status updated
-setInterval(
-    showTripStatus,
-    5000
-);
+        showTripStatus();
 
 
-        // Refresh trip status every 5 seconds
+        /* ==============================
+           REALTIME LIVE LOCATION
+        ============================== */
+
+        supabaseClient
+            .channel(
+                "van10-live-location"
+            )
+            .on(
+                "postgres_changes",
+                {
+                    event: "INSERT",
+                    schema: "public",
+                    table: "van_locations",
+                    filter:
+                        "van_number=eq.Van 10"
+                },
+
+                function(payload) {
+
+                    const latitude =
+                        Number(
+                            payload.new.latitude
+                        );
+
+                    const longitude =
+                        Number(
+                            payload.new.longitude
+                        );
+
+
+                    displayVanLocation(
+                        latitude,
+                        longitude
+                    );
+
+
+                    console.log(
+                        "Van 10 moved:",
+                        latitude,
+                        longitude
+                    );
+
+                }
+            )
+            .subscribe();
+
+
+        /* ==============================
+           REFRESH TRIP STATUS
+        ============================== */
+
         setInterval(
             showTripStatus,
             5000
